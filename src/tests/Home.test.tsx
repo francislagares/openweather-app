@@ -1,14 +1,16 @@
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { expect, test } from 'vitest';
 
 import Home from '@/app/page';
 
 import { render } from './utils/custom-render';
 
-test('Pages Router', () => {
+test('Pages Router', async () => {
   render(<Home />);
 
-  const main = within(screen.getByRole('main'));
+  const heading = screen.findByRole('heading', { name: /Weather/i });
 
-  expect(main.getByRole('heading', { name: /Weather/i })).toBeInTheDocument();
+  waitFor(() => {
+    expect(heading).toBeInTheDocument();
+  });
 });
