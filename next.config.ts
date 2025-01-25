@@ -4,7 +4,12 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   env: {},
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'openweathermap.org',
+      },
+    ],
   },
   reactStrictMode: true,
 };

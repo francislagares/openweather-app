@@ -1,10 +1,23 @@
 'use client';
 
+import { useState } from 'react';
+
 import { MdMyLocation, MdOutlineLocationOn, MdWbSunny } from 'react-icons/md';
 
 import SearchBox from './SearchBox';
 
 const Navbar = () => {
+  const [city, setCity] = useState('');
+
+  const handleInputChange = (value: string) => {
+    setCity(value);
+  };
+
+  const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log('searching for', city);
+  };
+
   return (
     <>
       <nav className='sticky top-0 left-0 z-50 bg-white shadow-xs'>
@@ -19,9 +32,13 @@ const Navbar = () => {
               className='cursor-pointer text-2xl text-gray-400 hover:opacity-80'
             />
             <MdOutlineLocationOn className='text-3xl' />
-            <p className='text-sm text-slate-900/80'>Default Location</p>
+            <p className='text-sm text-slate-900/80'>{city}</p>
             <div className='relative hidden md:flex'>
-              <SearchBox />
+              <SearchBox
+                value={city}
+                onSubmit={handleSubmitSearch}
+                onChange={e => handleInputChange(e.target.value)}
+              />
             </div>
           </section>
         </div>
