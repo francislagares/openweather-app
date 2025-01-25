@@ -1,4 +1,8 @@
+'use client';
+
 import { MdMyLocation, MdOutlineLocationOn, MdWbSunny } from 'react-icons/md';
+
+import SearchBox from './SearchBox';
 
 const Navbar = () => {
   return (
@@ -16,7 +20,9 @@ const Navbar = () => {
             />
             <MdOutlineLocationOn className='text-3xl' />
             <p className='text-sm text-slate-900/80'>Default Location</p>
-            <div className='relative hidden md:flex'>{/* SearchBox */}</div>
+            <div className='relative hidden md:flex'>
+              <SearchBox />
+            </div>
           </section>
         </div>
       </nav>
