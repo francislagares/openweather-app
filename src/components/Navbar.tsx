@@ -63,8 +63,8 @@ const Navbar = ({ location }: NavbarProps) => {
   };
 
   const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    setLoadingCity(true);
     e.preventDefault();
+    setLoadingCity(true);
 
     if (suggestions.length === 0) {
       setError('Location not found');

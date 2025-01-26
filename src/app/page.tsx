@@ -1,9 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 
 import FavoriteCities from '@/components/FavoriteCities';
@@ -13,45 +9,22 @@ import WeatherDetails from '@/components/WeatherDetails';
 import WeatherIcon from '@/components/WeatherIcon';
 import WeatherSkeleton from '@/components/WeatherSkeleton';
 
+import useWeather from '@/hooks/useWeather';
+
 import { convertKelvinToCelsius } from '@/utils/convertKelvinToCelsius';
 import { convertKelvinToFahrenheit } from '@/utils/convertKelvinToFahrenheit';
 import { convertWindSpeed } from '@/utils/convertWindSpeed';
 import { getDayOrNightIcon } from '@/utils/getDayOrNightIcon';
 import { metersToKilometers } from '@/utils/metersToKilometers';
 
-import config from '@/config/env';
-
 import { useWeatherStore } from '@/store';
-import { WeatherData } from '@/types/weather';
 
 const Home = () => {
-  const [city, setCity] = useState('');
   const place = useWeatherStore(state => state.place);
   const loadingCity = useWeatherStore(state => state.loadingCity);
-  const favoriteCities = useWeatherStore(state => state.favoriteCities);
-  const addFavoriteCity = useWeatherStore(state => state.addFavoriteCity);
   const isCelsius = useWeatherStore(state => state.isCelsius);
-  const {
-    isLoading,
-    error,
-    data: weatherData,
-  } = useQuery<WeatherData>({
-    queryKey: ['weatherData', place],
-    queryFn: async () => {
-      const { data } = await axios.get(
-        `${config.env.baseUrl}forecast?q=${place}&appid=${config.env.apiKey}&cnt=56`,
-      );
-
-      return data;
-    },
-  });
+  const { isLoading, error, data: weatherData } = useWeather(place);
   const weatherDay = weatherData?.list[0];
-
-  const handleAddToFavorites = () => {
-    if (city && !favoriteCities.includes(city)) {
-      addFavoriteCity(city);
-    }
-  };
 
   if (isLoading) {
     return (
