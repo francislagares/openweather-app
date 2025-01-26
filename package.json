@@ -109,7 +109,7 @@
     "prettier-stylelint": "^0.4.2",
     "start-server-and-test": "^2.0.10",
     "storybook": "^8.5.1",
-    "stylelint": "^16.13.2",
+    "stylelint": "^16.14.0",
     "stylelint-a11y": "^1.2.3",
     "stylelint-config-standard": "^37.0.0",
     "stylelint-config-standard-scss": "^14.0.0",
