@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 
 import { IoSearch } from 'react-icons/io5';
 
@@ -8,13 +8,23 @@ type SearchBoxProps = {
   className?: string;
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement> | undefined;
-  onSubmit: React.FormEventHandler<HTMLFormElement> | undefined;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 };
 
-const SearchBox = (props: SearchBoxProps) => {
+const SearchBox = memo((props: SearchBoxProps) => {
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (props.onSubmit) {
+        props.onSubmit(e);
+      }
+    },
+    [props.onSubmit],
+  );
+
   return (
     <form
-      onSubmit={props.onSubmit}
+      onSubmit={handleSubmit}
       className={cn(
         'relative flex h-10 items-center justify-center',
         props.className,
@@ -27,11 +37,14 @@ const SearchBox = (props: SearchBoxProps) => {
         placeholder='Search location..'
         className='h-full w-[230px] rounded-l-md border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-hidden'
       />
-      <button className='h-full rounded-r-md bg-blue-500 px-4 py-[9px] text-white hover:bg-blue-600 focus:outline-hidden'>
+      <button
+        type='submit'
+        className='h-full rounded-r-md bg-blue-500 px-4 py-[9px] text-white hover:bg-blue-600 focus:outline-hidden'
+      >
         <IoSearch />
       </button>
     </form>
   );
-};
+});
 
 export default SearchBox;

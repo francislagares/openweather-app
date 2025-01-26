@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import axios from 'axios';
 import { MdMyLocation, MdOutlineLocationOn, MdWbSunny } from 'react-icons/md';
@@ -14,15 +14,17 @@ import SuggetionBox from './SuggestionBox';
 
 type NavbarProps = { location?: string };
 
-const Navbar = ({ location }: NavbarProps) => {
+const Navbar = memo(({ location }: NavbarProps) => {
   const [city, setCity] = useState('');
   const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const setPlace = useWeatherStore(state => state.setPlace);
   const setLoadingCity = useWeatherStore(state => state.setLoadingCity);
+  const favoriteCities = useWeatherStore(state => state.favoriteCities);
+  const addFavoriteCity = useWeatherStore(state => state.addFavoriteCity);
 
-  const handleInputChange = async (value: string) => {
+  const handleInputChange = useCallback(async (value: string) => {
     setCity(value);
 
     if (value.length >= 3) {
@@ -49,32 +51,45 @@ const Navbar = ({ location }: NavbarProps) => {
       setSuggestions([]);
       setShowSuggestions(false);
     }
-  };
+  }, []);
 
-  const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    setLoadingCity(true);
-    e.preventDefault();
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    if (suggestions.length === 0) {
-      setError('Location not found');
-      setLoadingCity(false);
-    } else {
-      setError('');
+      if (!city.trim()) {
+        setError('Please enter a city name');
+        return;
+      }
 
-      setTimeout(() => {
+      try {
+        setLoadingCity(true);
+        const response = await axios.get(
+          `${config.env.baseUrl}weather?q=${city}&appid=${config.env.apiKey}`,
+        );
+
+        if (response.data) {
+          setPlace(response.data.name);
+          setError('');
+          setShowSuggestions(false);
+          setSuggestions([]);
+        }
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+        setError('City not found. Please try again.');
+      } finally {
         setLoadingCity(false);
-        setPlace(city);
-        setShowSuggestions(false);
-      }, 500);
-    }
-  };
+      }
+    },
+    [city, setPlace, setLoadingCity],
+  );
 
-  const handleSuggestionClick = (value: string) => {
+  const handleSuggestionClick = useCallback((value: string) => {
     setCity(value);
     setShowSuggestions(false);
-  };
+  }, []);
 
-  const handleCurrentLocation = () => {
+  const handleCurrentLocation = useCallback(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async postiion => {
         const { latitude, longitude } = postiion.coords;
@@ -94,6 +109,27 @@ const Navbar = ({ location }: NavbarProps) => {
         }
       });
     }
+  }, [setPlace, setLoadingCity]);
+
+  const searchBoxOnSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      handleSubmit(e);
+    },
+    [handleSubmit],
+  );
+
+  const searchBoxOnChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleInputChange(e.target.value);
+    },
+    [handleInputChange],
+  );
+
+  const handleAddToFavorites = () => {
+    console.log('city:', city);
+    if (city && !favoriteCities.includes(city)) {
+      addFavoriteCity(city);
+    }
   };
 
   return (
@@ -112,11 +148,17 @@ const Navbar = ({ location }: NavbarProps) => {
             />
             <MdOutlineLocationOn className='text-3xl' />
             <p className='text-sm text-slate-900/80'>{location}</p>
+            <button
+              onClick={handleAddToFavorites}
+              className='h-full rounded-r-md bg-blue-500 px-4 py-[9px] text-white hover:bg-blue-600 focus:outline-hidden'
+            >
+              Add to Favorites
+            </button>
             <div className='relative hidden md:flex'>
               <SearchBox
                 value={city}
-                onSubmit={handleSubmitSearch}
-                onChange={e => handleInputChange(e.target.value)}
+                onSubmit={searchBoxOnSubmit}
+                onChange={searchBoxOnChange}
               />
               <SuggetionBox
                 {...{
@@ -132,6 +174,6 @@ const Navbar = ({ location }: NavbarProps) => {
       </nav>
     </>
   );
-};
+});
 
 export default Navbar;
