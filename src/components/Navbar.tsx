@@ -23,6 +23,8 @@ const Navbar = memo(({ location }: NavbarProps) => {
   const setLoadingCity = useWeatherStore(state => state.setLoadingCity);
   const favoriteCities = useWeatherStore(state => state.favoriteCities);
   const addFavoriteCity = useWeatherStore(state => state.addFavoriteCity);
+  const setIsCelsius = useWeatherStore(state => state.setIsCelsius);
+  const isCelsius = useWeatherStore(state => state.isCelsius);
 
   const handleInputChange = useCallback(async (value: string) => {
     setCity(value);
@@ -125,13 +127,6 @@ const Navbar = memo(({ location }: NavbarProps) => {
     [handleInputChange],
   );
 
-  const handleAddToFavorites = () => {
-    console.log('city:', city);
-    if (city && !favoriteCities.includes(city)) {
-      addFavoriteCity(city);
-    }
-  };
-
   return (
     <>
       <nav className='sticky top-0 left-0 z-50 bg-white shadow-xs'>
@@ -140,6 +135,7 @@ const Navbar = memo(({ location }: NavbarProps) => {
             Weather
             <MdWbSunny className='mt-1 text-3xl text-yellow-300' />
           </h2>
+
           <section className='flex items-center gap-2'>
             <MdMyLocation
               title='Your Current Location'
@@ -147,13 +143,9 @@ const Navbar = memo(({ location }: NavbarProps) => {
               className='cursor-pointer text-2xl text-gray-400 hover:opacity-80'
             />
             <MdOutlineLocationOn className='text-3xl' />
+
             <p className='text-sm text-slate-900/80'>{location}</p>
-            <button
-              onClick={handleAddToFavorites}
-              className='h-full rounded-r-md bg-blue-500 px-4 py-[9px] text-white hover:bg-blue-600 focus:outline-hidden'
-            >
-              Add to Favorites
-            </button>
+
             <div className='relative hidden md:flex'>
               <SearchBox
                 value={city}
@@ -168,6 +160,20 @@ const Navbar = memo(({ location }: NavbarProps) => {
                   error,
                 }}
               />
+            </div>
+            <div className='flex items-center gap-2'>
+              <p>°C</p>
+              <label className='relative inline-flex cursor-pointer items-center'>
+                <input
+                  type='checkbox'
+                  value=''
+                  className='peer sr-only'
+                  checked={!isCelsius}
+                  onChange={() => setIsCelsius(!isCelsius)}
+                />
+                <div className="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-hidden after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></div>
+              </label>
+              <p>°F</p>
             </div>
           </section>
         </div>
