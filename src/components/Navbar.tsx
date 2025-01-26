@@ -174,6 +174,21 @@ const Navbar = ({ location }: NavbarProps) => {
             </div>
           </section>
         </div>
+        <div className='relative md:hidden'>
+          <SearchBox
+            value={city}
+            onSubmit={handleSubmitSearch}
+            onChange={e => handleInputChange(e.target.value)}
+          />
+          <SuggetionBox
+            {...{
+              showSuggestions,
+              suggestions,
+              handleSuggestionClick,
+              error,
+            }}
+          />
+        </div>
       </nav>
     </>
   );

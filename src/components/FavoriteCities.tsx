@@ -119,7 +119,7 @@ export default function FavoriteCities() {
   return (
     <div className='mt-4 flex flex-col gap-2'>
       {favoriteCities && <h2 className='text-2xl'>Favorite Cities</h2>}
-      <div className='flex w-full overflow-x-auto'>
+      <div className='scrollbar-hide flex w-full overflow-x-auto'>
         <div className='flex flex-row gap-2'>{renderFavoriteCities}</div>
       </div>
     </div>
