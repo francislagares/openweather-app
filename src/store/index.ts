@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 interface WeatherState {
   place: string;
@@ -12,18 +13,25 @@ interface WeatherState {
   setIsCelsius: (isCelsius: boolean) => void;
 }
 
-export const useWeatherStore = create<WeatherState>(set => ({
-  place: 'Madrid',
-  loadingCity: false,
-  favoriteCities: [],
-  isCelsius: true,
-  setPlace: place => set({ place }),
-  setLoadingCity: loading => set({ loadingCity: loading }),
-  addFavoriteCity: city =>
-    set(state => ({ favoriteCities: [...state.favoriteCities, city] })),
-  removeFavoriteCity: city =>
-    set(state => ({
-      favoriteCities: state.favoriteCities.filter(c => c !== city),
-    })),
-  setIsCelsius: isCelsius => set({ isCelsius }),
-}));
+export const useWeatherStore = create<WeatherState>()(
+  persist(
+    set => ({
+      place: 'Madrid',
+      loadingCity: false,
+      favoriteCities: [],
+      isCelsius: true,
+      setPlace: place => set({ place }),
+      setLoadingCity: loading => set({ loadingCity: loading }),
+      addFavoriteCity: city =>
+        set(state => ({ favoriteCities: [...state.favoriteCities, city] })),
+      removeFavoriteCity: city =>
+        set(state => ({
+          favoriteCities: state.favoriteCities.filter(c => c !== city),
+        })),
+      setIsCelsius: isCelsius => set({ isCelsius }),
+    }),
+    {
+      name: 'weather-storage',
+    },
+  ),
+);

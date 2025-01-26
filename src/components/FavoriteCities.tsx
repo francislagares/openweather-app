@@ -1,6 +1,8 @@
 'use client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { useRouter } from 'next/navigation';
+
 import axios from 'axios';
 import { format, parseISO } from 'date-fns';
 import { IoClose } from 'react-icons/io5';
@@ -32,7 +34,9 @@ export default function FavoriteCities() {
   const favoriteCities = useWeatherStore(state => state.favoriteCities);
   const isCelsius = useWeatherStore(state => state.isCelsius);
   const removeFavoriteCity = useWeatherStore(state => state.removeFavoriteCity);
+  const setPlace = useWeatherStore(state => state.setPlace);
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
+  const router = useRouter();
 
   const fetchWeatherData = useCallback(async () => {
     const data = await Promise.all(favoriteCities.map(fetchCityWeather));
@@ -61,6 +65,11 @@ export default function FavoriteCities() {
     [favoriteCities, removeFavoriteCity],
   );
 
+  const handleCityClick = (city: string) => {
+    setPlace(city);
+    router.push(`/?city=${city}`);
+  };
+
   const renderFavoriteCities = useMemo(() => {
     return weatherData
       .map((data, index) => {
@@ -78,9 +87,12 @@ export default function FavoriteCities() {
         return (
           <div
             key={`${cityName}-${index}`}
-            className='flex items-center justify-between rounded-md bg-gray-100 p-2'
+            className='flex w-fit items-center justify-between rounded-md bg-white p-2 hover:bg-gray-200'
           >
-            <div className='flex items-center gap-2'>
+            <button
+              onClick={() => handleCityClick(cityName)}
+              className='flex cursor-pointer items-center gap-2'
+            >
               <WeatherIcon iconname={weatherIcon} />
               <div>
                 <p className='text-sm font-semibold'>{cityName}</p>
@@ -91,10 +103,10 @@ export default function FavoriteCities() {
               <p className='ml-2 text-lg font-bold'>
                 {temperature.toFixed(0)}°{isCelsius ? 'C' : 'F'}
               </p>
-            </div>
+            </button>
             <button
               onClick={() => handleRemoveFavorite(cityName)}
-              className='rounded-full p-1 hover:bg-gray-200'
+              className='cursor-pointer rounded-full p-1'
             >
               <IoClose />
             </button>
@@ -102,7 +114,14 @@ export default function FavoriteCities() {
         );
       })
       .filter(Boolean);
-  }, [weatherData, isCelsius, handleRemoveFavorite]);
+  }, [weatherData, isCelsius, handleRemoveFavorite, setPlace, router]);
 
-  return <div className='mt-4 flex flex-col gap-2'>{renderFavoriteCities}</div>;
+  return (
+    <div className='mt-4 flex flex-col gap-2'>
+      {favoriteCities && <h2 className='text-2xl'>Favorite Cities</h2>}
+      <div className='flex w-full overflow-x-auto'>
+        <div className='flex flex-row gap-2'>{renderFavoriteCities}</div>
+      </div>
+    </div>
+  );
 }

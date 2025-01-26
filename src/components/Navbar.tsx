@@ -1,9 +1,15 @@
 'use client';
 
-import { memo, useCallback, useState } from 'react';
+import { useState } from 'react';
 
 import axios from 'axios';
-import { MdMyLocation, MdOutlineLocationOn, MdWbSunny } from 'react-icons/md';
+import {
+  MdFavorite,
+  MdMyLocation,
+  MdOutlineFavoriteBorder,
+  MdOutlineLocationOn,
+  MdWbSunny,
+} from 'react-icons/md';
 
 import config from '@/config/env';
 
@@ -14,7 +20,7 @@ import SuggetionBox from './SuggestionBox';
 
 type NavbarProps = { location?: string };
 
-const Navbar = memo(({ location }: NavbarProps) => {
+const Navbar = ({ location }: NavbarProps) => {
   const [city, setCity] = useState('');
   const [error, setError] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -23,10 +29,11 @@ const Navbar = memo(({ location }: NavbarProps) => {
   const setLoadingCity = useWeatherStore(state => state.setLoadingCity);
   const favoriteCities = useWeatherStore(state => state.favoriteCities);
   const addFavoriteCity = useWeatherStore(state => state.addFavoriteCity);
+  const removeFavoriteCity = useWeatherStore(state => state.removeFavoriteCity);
   const setIsCelsius = useWeatherStore(state => state.setIsCelsius);
   const isCelsius = useWeatherStore(state => state.isCelsius);
 
-  const handleInputChange = useCallback(async (value: string) => {
+  const handleInputChange = async (value: string) => {
     setCity(value);
 
     if (value.length >= 3) {
@@ -53,45 +60,32 @@ const Navbar = memo(({ location }: NavbarProps) => {
       setSuggestions([]);
       setShowSuggestions(false);
     }
-  }, []);
+  };
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
+  const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    setLoadingCity(true);
+    e.preventDefault();
 
-      if (!city.trim()) {
-        setError('Please enter a city name');
-        return;
-      }
+    if (suggestions.length === 0) {
+      setError('Location not found');
+      setLoadingCity(false);
+    } else {
+      setError('');
 
-      try {
-        setLoadingCity(true);
-        const response = await axios.get(
-          `${config.env.baseUrl}weather?q=${city}&appid=${config.env.apiKey}`,
-        );
-
-        if (response.data) {
-          setPlace(response.data.name);
-          setError('');
-          setShowSuggestions(false);
-          setSuggestions([]);
-        }
-      } catch (error) {
-        console.error('Error fetching weather data:', error);
-        setError('City not found. Please try again.');
-      } finally {
+      setTimeout(() => {
         setLoadingCity(false);
-      }
-    },
-    [city, setPlace, setLoadingCity],
-  );
+        setPlace(city);
+        setShowSuggestions(false);
+      }, 500);
+    }
+  };
 
-  const handleSuggestionClick = useCallback((value: string) => {
+  const handleSuggestionClick = (value: string) => {
     setCity(value);
     setShowSuggestions(false);
-  }, []);
+  };
 
-  const handleCurrentLocation = useCallback(() => {
+  const handleCurrentLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async postiion => {
         const { latitude, longitude } = postiion.coords;
@@ -111,21 +105,17 @@ const Navbar = memo(({ location }: NavbarProps) => {
         }
       });
     }
-  }, [setPlace, setLoadingCity]);
+  };
 
-  const searchBoxOnSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      handleSubmit(e);
-    },
-    [handleSubmit],
-  );
-
-  const searchBoxOnChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      handleInputChange(e.target.value);
-    },
-    [handleInputChange],
-  );
+  const handleFavoriteClick = () => {
+    if (location) {
+      if (favoriteCities.includes(location)) {
+        removeFavoriteCity(location);
+      } else {
+        addFavoriteCity(location);
+      }
+    }
+  };
 
   return (
     <>
@@ -135,7 +125,6 @@ const Navbar = memo(({ location }: NavbarProps) => {
             Weather
             <MdWbSunny className='mt-1 text-3xl text-yellow-300' />
           </h2>
-
           <section className='flex items-center gap-2'>
             <MdMyLocation
               title='Your Current Location'
@@ -143,14 +132,12 @@ const Navbar = memo(({ location }: NavbarProps) => {
               className='cursor-pointer text-2xl text-gray-400 hover:opacity-80'
             />
             <MdOutlineLocationOn className='text-3xl' />
-
             <p className='text-sm text-slate-900/80'>{location}</p>
-
             <div className='relative hidden md:flex'>
               <SearchBox
                 value={city}
-                onSubmit={searchBoxOnSubmit}
-                onChange={searchBoxOnChange}
+                onSubmit={handleSubmitSearch}
+                onChange={e => handleInputChange(e.target.value)}
               />
               <SuggetionBox
                 {...{
@@ -161,6 +148,16 @@ const Navbar = memo(({ location }: NavbarProps) => {
                 }}
               />
             </div>
+            {location && (
+              <button onClick={handleFavoriteClick}>
+                {favoriteCities.includes(location) ? (
+                  <MdFavorite className='text-2xl text-red-500' />
+                ) : (
+                  <MdOutlineFavoriteBorder className='text-2xl' />
+                )}
+              </button>
+            )}
+
             <div className='flex items-center gap-2'>
               <p>°C</p>
               <label className='relative inline-flex cursor-pointer items-center'>
@@ -180,6 +177,6 @@ const Navbar = memo(({ location }: NavbarProps) => {
       </nav>
     </>
   );
-});
+};
 
 export default Navbar;
