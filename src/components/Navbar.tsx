@@ -105,21 +105,38 @@ const Navbar = ({ location }: NavbarProps) => {
 
   return (
     <>
-      <nav className='sm: sticky top-0 left-0 z-50 bg-white py-2 shadow-xs'>
-        <div className='mx-auto flex h-[80px] w-full max-w-7xl items-center justify-between px-3'>
+      <nav className='sticky top-0 left-0 z-50 bg-white py-8 shadow-xs sm:py-4'>
+        <div className='mx-auto flex h-[100px] w-full max-w-7xl flex-col items-center justify-between gap-2 px-3 sm:h-[80px] sm:flex-row sm:gap-0'>
+          {/* Weather Title */}
           <h2 className='flex items-center justify-center gap-2 text-3xl text-gray-500'>
             Weather
             <MdWbSunny className='mt-1 text-3xl text-yellow-300' />
           </h2>
-          <section className='flex items-center gap-2'>
-            <MdMyLocation
-              title='Your Current Location'
-              onClick={handleCurrentLocation}
-              className='cursor-pointer text-2xl text-gray-400 hover:opacity-80'
-            />
-            <MdOutlineLocationOn className='text-3xl' />
-            <p className='text-sm text-slate-900/80'>{location}</p>
-            <div className='relative hidden md:flex'>
+
+          {/* Icons and Search Section */}
+          <section className='flex w-full flex-col items-center gap-2 sm:w-auto sm:flex-row sm:items-center sm:gap-2'>
+            {/* Icons */}
+            <div className='flex items-center gap-2'>
+              <MdMyLocation
+                title='Your Current Location'
+                onClick={handleCurrentLocation}
+                className='cursor-pointer text-2xl text-gray-400 hover:opacity-80'
+              />
+              <MdOutlineLocationOn className='text-3xl' />
+              <p className='text-sm text-slate-900/80'>{location}</p>
+              {location && (
+                <button onClick={handleFavoriteClick}>
+                  {favoriteCities.includes(location) ? (
+                    <MdFavorite className='text-2xl text-red-500' />
+                  ) : (
+                    <MdOutlineFavoriteBorder className='text-2xl' />
+                  )}
+                </button>
+              )}
+            </div>
+
+            {/* Search Box and Suggestions */}
+            <div className='relative w-full sm:w-auto'>
               <SearchBox
                 value={city}
                 onSubmit={handleSubmitSearch}
@@ -140,15 +157,6 @@ const Navbar = ({ location }: NavbarProps) => {
                 }}
               />
             </div>
-            {location && (
-              <button onClick={handleFavoriteClick}>
-                {favoriteCities.includes(location) ? (
-                  <MdFavorite className='text-2xl text-red-500' />
-                ) : (
-                  <MdOutlineFavoriteBorder className='text-2xl' />
-                )}
-              </button>
-            )}
           </section>
         </div>
       </nav>
