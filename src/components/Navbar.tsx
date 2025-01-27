@@ -33,10 +33,13 @@ const Navbar = ({ location }: NavbarProps) => {
   const { suggestions, showSuggestions, fetchSuggestions, setShowSuggestions } =
     useWeatherSuggestions();
 
-  const handleInputChange = (value: string) => {
-    setCity(value);
-    fetchSuggestions(value);
-  };
+  const handleInputChange = useCallback(
+    (value: string) => {
+      setCity(value);
+      fetchSuggestions(value);
+    },
+    [fetchSuggestions],
+  );
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,21 +48,24 @@ const Navbar = ({ location }: NavbarProps) => {
     [handleInputChange],
   );
 
+  const updateLocation = (location: string) => {
+    setLoadingCity(true);
+    setTimeout(() => {
+      setLoadingCity(false);
+      setPlace(location);
+      setShowSuggestions(false);
+    }, 500);
+  };
+
   const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoadingCity(true);
 
     if (suggestions.length === 0) {
       setSubmitError('Location not found');
       setLoadingCity(false);
     } else {
       setSubmitError('');
-
-      setTimeout(() => {
-        setLoadingCity(false);
-        setPlace(city);
-        setShowSuggestions(false);
-      }, 500);
+      updateLocation(city);
     }
   };
 
@@ -70,18 +76,14 @@ const Navbar = ({ location }: NavbarProps) => {
 
   const handleCurrentLocation = () => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(async postiion => {
-        const { latitude, longitude } = postiion.coords;
+      navigator.geolocation.getCurrentPosition(async position => {
+        const { latitude, longitude } = position.coords;
 
         try {
-          setLoadingCity(true);
           const response = await axios.get(
             `${config.env.baseUrl}weather?lat=${latitude}&lon=${longitude}&appid=${config.env.apiKey}`,
           );
-          setTimeout(() => {
-            setLoadingCity(false);
-            setPlace(response.data.name);
-          }, 500);
+          updateLocation(response.data.name);
         } catch (error) {
           setLoadingCity(false);
           console.log('Error fetching current location:', error);

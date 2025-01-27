@@ -11,7 +11,7 @@ test('SuggestionBox renders correctly with suggestions', async () => {
       showSuggestions={true}
       suggestions={['London', 'New York']}
       handleSuggestionClick={() => {}}
-      error=''
+      submitError=''
     />,
   );
 
@@ -28,7 +28,7 @@ test('SuggestionBox renders correctly with error', async () => {
       showSuggestions={true}
       suggestions={[]}
       handleSuggestionClick={() => {}}
-      error='Location not found'
+      submitError='Location not found'
     />,
   );
 
@@ -42,7 +42,7 @@ test('SuggestionBox does not render when showSuggestions is false', async () => 
       showSuggestions={false}
       suggestions={['London', 'New York']}
       handleSuggestionClick={() => {}}
-      error=''
+      submitError=''
     />,
   );
 
@@ -59,7 +59,7 @@ test('SuggestionBox does not render when suggestions are empty and there is no e
       showSuggestions={true}
       suggestions={[]}
       handleSuggestionClick={() => {}}
-      error=''
+      submitError=''
     />,
   );
 
@@ -77,7 +77,7 @@ test('SuggestionBox handleSuggestionClick works correctly', async () => {
       showSuggestions={true}
       suggestions={['London', 'New York']}
       handleSuggestionClick={handleSuggestionClick}
-      error=''
+      submitError=''
     />,
   );
 
