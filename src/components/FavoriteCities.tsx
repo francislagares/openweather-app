@@ -10,7 +10,8 @@ import { IoClose } from 'react-icons/io5';
 import { convertKelvinToCelsius } from '@/utils/convertKelvinToCelsius';
 import { convertKelvinToFahrenheit } from '@/utils/convertKelvinToFahrenheit';
 import { getDayOrNightIcon } from '@/utils/getDayOrNightIcon';
-import { getWeatherByCityUrl } from '@/utils/weatherApi';
+
+import config from '@/config/env';
 
 import { useWeatherStore } from '@/store';
 import { WeatherData } from '@/types/weather';
@@ -19,7 +20,9 @@ import WeatherIcon from './WeatherIcon';
 
 const fetchCityWeather = async (city: string) => {
   try {
-    const response = await axios.get(getWeatherByCityUrl(city));
+    const response = await axios.get(
+      `${config.env.baseUrl}forecast?q=${city}&appid=${config.env.apiKey}&cnt=56`,
+    );
 
     return response.data;
   } catch (error) {
@@ -116,7 +119,7 @@ export default function FavoriteCities() {
 
   return (
     <div className='mt-4 flex flex-col gap-2'>
-      {favoriteCities && <h2 className='text-2xl'>Favorite Cities</h2>}
+      <h2 className='text-2xl'>Favorite Cities</h2>
       <div className='scrollbar-hide flex w-full overflow-x-auto'>
         <div className='flex flex-row gap-2'>{renderFavoriteCities}</div>
       </div>

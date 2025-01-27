@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import { format, parseISO } from 'date-fns';
 
 import FavoriteCities from '@/components/FavoriteCities';
@@ -25,8 +27,12 @@ const Home = () => {
   const loadingCity = useWeatherStore(state => state.loadingCity);
   const isCelsius = useWeatherStore(state => state.isCelsius);
   const setIsCelsius = useWeatherStore(state => state.setIsCelsius);
-  const { isLoading, error, data: weatherData } = useWeather(place);
+  const { isLoading, error, data: weatherData, refetch } = useWeather(place);
   const weatherDay = weatherData?.list[0];
+
+  useEffect(() => {
+    refetch();
+  }, [place, refetch]);
 
   if (isLoading) {
     return (

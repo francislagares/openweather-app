@@ -6,7 +6,7 @@ import { apiClient } from '@/services/api';
 
 const useWeather = (place: string) => {
   return useQuery<WeatherData>({
-    queryKey: ['weatherData', place],
+    queryKey: ['weatherData'],
     queryFn: async () => apiClient.get<WeatherData>(`/forecast?q=${place}`),
 
     enabled: !!place,

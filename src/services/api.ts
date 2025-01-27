@@ -45,7 +45,7 @@ class ApiClient {
   ): Promise<T> {
     try {
       const response = await this.axiosInstance.get<T>(url, { params });
-      
+
       return response;
     } catch (error) {
       throw new Error(this.handleError(error));
