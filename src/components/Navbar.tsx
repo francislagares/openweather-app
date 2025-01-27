@@ -11,6 +11,8 @@ import {
   MdWbSunny,
 } from 'react-icons/md';
 
+import useWeatherSuggestions from '@/hooks/useWeatherSuggestions';
+
 import config from '@/config/env';
 
 import { useWeatherStore } from '@/store';
@@ -22,42 +24,23 @@ type NavbarProps = { location?: string };
 
 const Navbar = ({ location }: NavbarProps) => {
   const [city, setCity] = useState('');
-  const [error, setError] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   const setPlace = useWeatherStore(state => state.setPlace);
   const setLoadingCity = useWeatherStore(state => state.setLoadingCity);
   const favoriteCities = useWeatherStore(state => state.favoriteCities);
   const addFavoriteCity = useWeatherStore(state => state.addFavoriteCity);
   const removeFavoriteCity = useWeatherStore(state => state.removeFavoriteCity);
+  const {
+    suggestions,
+    error,
+    showSuggestions,
+    fetchSuggestions,
+    setShowSuggestions,
+  } = useWeatherSuggestions();
 
-  const handleInputChange = async (value: string) => {
+  const handleInputChange = (value: string) => {
     setCity(value);
-
-    if (value.length >= 3) {
-      try {
-        const response = await axios.get(
-          `${config.env.baseUrl}find?q=${value}&appid=${config.env.apiKey}`,
-        );
-
-        const suggestions = response.data.list.map(
-          (sugggestion: { name: string }) => sugggestion.name,
-        );
-
-        setSuggestions(suggestions);
-        setError('');
-        setShowSuggestions(true);
-      } catch (error) {
-        console.error('Error fetching suggestions:', error);
-
-        setSuggestions([]);
-        setError('Failed to fetch suggestions');
-        setShowSuggestions(false);
-      }
-    } else {
-      setSuggestions([]);
-      setShowSuggestions(false);
-    }
+    fetchSuggestions(value);
   };
 
   const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
@@ -65,10 +48,10 @@ const Navbar = ({ location }: NavbarProps) => {
     setLoadingCity(true);
 
     if (suggestions.length === 0) {
-      setError('Location not found');
+      setSubmitError('Location not found');
       setLoadingCity(false);
     } else {
-      setError('');
+      setSubmitError('');
 
       setTimeout(() => {
         setLoadingCity(false);
