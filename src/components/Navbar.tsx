@@ -30,8 +30,6 @@ const Navbar = ({ location }: NavbarProps) => {
   const favoriteCities = useWeatherStore(state => state.favoriteCities);
   const addFavoriteCity = useWeatherStore(state => state.addFavoriteCity);
   const removeFavoriteCity = useWeatherStore(state => state.removeFavoriteCity);
-  const setIsCelsius = useWeatherStore(state => state.setIsCelsius);
-  const isCelsius = useWeatherStore(state => state.isCelsius);
 
   const handleInputChange = async (value: string) => {
     setCity(value);
@@ -119,7 +117,7 @@ const Navbar = ({ location }: NavbarProps) => {
 
   return (
     <>
-      <nav className='sticky top-0 left-0 z-50 bg-white shadow-xs'>
+      <nav className='sm: sticky top-0 left-0 z-50 bg-white py-2 shadow-xs'>
         <div className='mx-auto flex h-[80px] w-full max-w-7xl items-center justify-between px-3'>
           <h2 className='flex items-center justify-center gap-2 text-3xl text-gray-500'>
             Weather
@@ -157,21 +155,6 @@ const Navbar = ({ location }: NavbarProps) => {
                 )}
               </button>
             )}
-
-            <div className='flex items-center gap-2'>
-              <p>°C</p>
-              <label className='relative inline-flex cursor-pointer items-center'>
-                <input
-                  type='checkbox'
-                  value=''
-                  className='peer sr-only'
-                  checked={!isCelsius}
-                  onChange={() => setIsCelsius(!isCelsius)}
-                />
-                <div className="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-hidden after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></div>
-              </label>
-              <p>°F</p>
-            </div>
           </section>
         </div>
         <div className='relative md:hidden'>

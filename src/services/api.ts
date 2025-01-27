@@ -42,12 +42,10 @@ class ApiClient {
   public async get<T>(
     url: string,
     params?: Record<string, unknown>,
-  ): Promise<AxiosResponse<T>> {
+  ): Promise<T> {
     try {
-      const response: AxiosResponse<T> = await this.axiosInstance.get<T>(url, {
-        params,
-      });
-
+      const response = await this.axiosInstance.get<T>(url, { params });
+      
       return response;
     } catch (error) {
       throw new Error(this.handleError(error));

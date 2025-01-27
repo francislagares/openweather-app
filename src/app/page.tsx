@@ -15,6 +15,7 @@ import { convertKelvinToCelsius } from '@/utils/convertKelvinToCelsius';
 import { convertKelvinToFahrenheit } from '@/utils/convertKelvinToFahrenheit';
 import { convertWindSpeed } from '@/utils/convertWindSpeed';
 import { getDayOrNightIcon } from '@/utils/getDayOrNightIcon';
+import { getTemperature } from '@/utils/getTemperature';
 import { metersToKilometers } from '@/utils/metersToKilometers';
 
 import { useWeatherStore } from '@/store';
@@ -23,6 +24,7 @@ const Home = () => {
   const place = useWeatherStore(state => state.place);
   const loadingCity = useWeatherStore(state => state.loadingCity);
   const isCelsius = useWeatherStore(state => state.isCelsius);
+  const setIsCelsius = useWeatherStore(state => state.setIsCelsius);
   const { isLoading, error, data: weatherData } = useWeather(place);
   const weatherDay = weatherData?.list[0];
 
@@ -51,7 +53,7 @@ const Home = () => {
   }
 
   return (
-    <div className='flex min-h-screen flex-col gap-4 bg-gray-100'>
+    <div className='flex min-h-screen flex-col gap-4 overflow-auto bg-gray-100'>
       <Navbar location={weatherData?.city.name} />
       <main className='mx-auto flex w-full max-w-7xl flex-col gap-9 px-3 pt-4 pb-10'>
         <FavoriteCities />
@@ -59,54 +61,48 @@ const Home = () => {
           <WeatherSkeleton />
         ) : (
           <section className='space-y-4'>
-            <div className='space-y-2'>
+            <div className='flex flex-col justify-between space-y-2'>
               <h2 className='flex items-end gap-1 text-2xl'>
                 <p>{format(parseISO(weatherDay?.dt_txt ?? ''), 'EEEE')}</p>
                 <p className='text-lg'>
                   ({format(parseISO(weatherDay?.dt_txt ?? ''), 'dd.MM.yyyy')})
                 </p>
               </h2>
+
+              <div className='flex items-center gap-2'>
+                <p>°C</p>
+                <label className='relative inline-flex cursor-pointer items-center'>
+                  <input
+                    type='checkbox'
+                    value=''
+                    className='peer sr-only'
+                    checked={!isCelsius}
+                    onChange={() => setIsCelsius(!isCelsius)}
+                  />
+                  <div className="peer h-6 w-11 rounded-full bg-gray-200 peer-checked:bg-blue-600 peer-focus:ring-4 peer-focus:ring-blue-300 peer-focus:outline-hidden after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></div>
+                </label>
+                <p>°F</p>
+              </div>
+
               <WeatherContainer className='items-center gap-10 px-6'>
                 {/* temprature */}
                 <div className='flex flex-col px-4'>
                   <span className='text-5xl'>
-                    {isCelsius
-                      ? convertKelvinToCelsius(weatherDay?.main.temp ?? 296.37)
-                      : convertKelvinToFahrenheit(
-                          weatherDay?.main.temp ?? 296.37,
-                        )}
-                    °
+                    {getTemperature(weatherDay?.main.temp, isCelsius)}
                   </span>
                   <p className='space-x-1 text-xs whitespace-nowrap'>
                     <span> Feels like</span>
                     <span>
-                      {isCelsius
-                        ? convertKelvinToCelsius(
-                            weatherDay?.main.feels_like ?? 0,
-                          )
-                        : convertKelvinToFahrenheit(
-                            weatherDay?.main.feels_like ?? 0,
-                          )}
-                      °
+                      {getTemperature(weatherDay?.main.feels_like, isCelsius)}
                     </span>
                   </p>
                   <p className='space-x-2 text-xs'>
                     <span>
-                      {isCelsius
-                        ? convertKelvinToCelsius(weatherDay?.main.temp_min ?? 0)
-                        : convertKelvinToFahrenheit(
-                            weatherDay?.main.temp_min ?? 0,
-                          )}
-                      °↓{' '}
+                      {getTemperature(weatherDay?.main.temp_min, isCelsius)}↓{' '}
                     </span>
                     <span>
                       {' '}
-                      {isCelsius
-                        ? convertKelvinToCelsius(weatherDay?.main.temp_max ?? 0)
-                        : convertKelvinToFahrenheit(
-                            weatherDay?.main.temp_max ?? 0,
-                          )}
-                      °↑
+                      {getTemperature(weatherDay?.main.temp_max, isCelsius)}↑
                     </span>
                   </p>
                 </div>
