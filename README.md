@@ -1,8 +1,10 @@
 # OpenWeather App
 
-A modern weather application built with Next.js, TypeScript, Zustand, and React Query.
+A modern weather application built with Next.js, TypeScript, Zustand, and React
+Query.
 
 ## Features
+
 - Search for current weather conditions by city.
 - Fetches and displays weather forecasts using OpenWeather API.
 - Caches search results for improved performance.
@@ -11,6 +13,7 @@ A modern weather application built with Next.js, TypeScript, Zustand, and React 
 - Fetches current location's weather using geolocation.
 
 ## Tech Stack
+
 - **Next.js**: UI development
 - **TypeScript**: Strongly typed JavaScript
 - **Zustand**: State management
@@ -23,7 +26,7 @@ A modern weather application built with Next.js, TypeScript, Zustand, and React 
 1. Clone the repository:
    ```sh
    git clone https://github.com/francislagares/openweather-app.git
-   cd weather-app
+   cd openweather-app
    ```
 2. Install dependencies:
    ```sh
@@ -40,6 +43,7 @@ A modern weather application built with Next.js, TypeScript, Zustand, and React 
    ```
 
 ## Usage
+
 - Enter a city name in the search bar to get weather details.
 - Click on the location icon to fetch the weather for your current location.
 - Weather data is cached to prevent unnecessary API calls.
@@ -47,9 +51,11 @@ A modern weather application built with Next.js, TypeScript, Zustand, and React 
 ## Run Tests
 
 - Just run the following command:
-   ```sh
-   pnpm test:ci
-   ```
+  ```sh
+  pnpm test:ci
+  ```
 
 ## License
-This project is licensed under the MIT License. Feel free to use and modify it as needed.
+
+This project is licensed under the MIT License. Feel free to use and modify it
+as needed.
