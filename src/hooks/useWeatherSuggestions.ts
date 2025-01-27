@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import axios from 'axios';
 
-import config from '@/config/env';
+import { getSuggestionsUrl } from '@/utils/weatherApi';
 
 const useWeatherSuggestions = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -12,9 +12,7 @@ const useWeatherSuggestions = () => {
   const fetchSuggestions = async (query: string) => {
     if (query.length >= 3) {
       try {
-        const response = await axios.get(
-          `${config.env.baseUrl}find?q=${query}&appid=${config.env.apiKey}`,
-        );
+        const response = await axios.get(getSuggestionsUrl(query));
 
         const suggestions = response.data.list.map(
           (sugggestion: { name: string }) => sugggestion.name,

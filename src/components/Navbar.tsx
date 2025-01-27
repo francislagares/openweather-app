@@ -13,7 +13,7 @@ import {
 
 import useWeatherSuggestions from '@/hooks/useWeatherSuggestions';
 
-import config from '@/config/env';
+import { getWeatherByCoordsUrl } from '@/utils/weatherApi';
 
 import { useWeatherStore } from '@/store';
 
@@ -81,8 +81,9 @@ const Navbar = ({ location }: NavbarProps) => {
 
         try {
           const response = await axios.get(
-            `${config.env.baseUrl}weather?lat=${latitude}&lon=${longitude}&appid=${config.env.apiKey}`,
+            getWeatherByCoordsUrl(latitude, longitude),
           );
+
           updateLocation(response.data.name);
         } catch (error) {
           setLoadingCity(false);

@@ -10,8 +10,7 @@ import { IoClose } from 'react-icons/io5';
 import { convertKelvinToCelsius } from '@/utils/convertKelvinToCelsius';
 import { convertKelvinToFahrenheit } from '@/utils/convertKelvinToFahrenheit';
 import { getDayOrNightIcon } from '@/utils/getDayOrNightIcon';
-
-import config from '@/config/env';
+import { getWeatherByCityUrl } from '@/utils/weatherApi';
 
 import { useWeatherStore } from '@/store';
 import { WeatherData } from '@/types/weather';
@@ -20,9 +19,8 @@ import WeatherIcon from './WeatherIcon';
 
 const fetchCityWeather = async (city: string) => {
   try {
-    const response = await axios.get(
-      `${config.env.baseUrl}forecast?q=${city}&appid=${config.env.apiKey}&cnt=56`,
-    );
+    const response = await axios.get(getWeatherByCityUrl(city));
+
     return response.data;
   } catch (error) {
     console.error(`Failed to fetch weather data for ${city}`, error);
