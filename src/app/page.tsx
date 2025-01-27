@@ -42,6 +42,14 @@ const Home = () => {
     );
   }
 
+  if (!weatherData || !weatherDay) {
+    return (
+      <div className='flex min-h-screen items-center justify-center'>
+        <p className='text-red-400'>No weather data available</p>
+      </div>
+    );
+  }
+
   return (
     <div className='flex min-h-screen flex-col gap-4 bg-gray-100'>
       <Navbar location={weatherData?.city.name} />
