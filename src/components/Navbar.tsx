@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import axios from 'axios';
 import {
@@ -23,25 +23,27 @@ import SuggetionBox from './SuggestionBox';
 type NavbarProps = { location?: string };
 
 const Navbar = ({ location }: NavbarProps) => {
-  const [city, setCity] = useState('');
-  const [submitError, setSubmitError] = useState('');
+  const [city, setCity] = useState<string>('');
+  const [submitError, setSubmitError] = useState<string>('');
   const setPlace = useWeatherStore(state => state.setPlace);
   const setLoadingCity = useWeatherStore(state => state.setLoadingCity);
   const favoriteCities = useWeatherStore(state => state.favoriteCities);
   const addFavoriteCity = useWeatherStore(state => state.addFavoriteCity);
   const removeFavoriteCity = useWeatherStore(state => state.removeFavoriteCity);
-  const {
-    suggestions,
-    error,
-    showSuggestions,
-    fetchSuggestions,
-    setShowSuggestions,
-  } = useWeatherSuggestions();
+  const { suggestions, showSuggestions, fetchSuggestions, setShowSuggestions } =
+    useWeatherSuggestions();
 
   const handleInputChange = (value: string) => {
     setCity(value);
     fetchSuggestions(value);
   };
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      handleInputChange(e.target.value);
+    },
+    [handleInputChange],
+  );
 
   const handleSubmitSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -118,14 +120,20 @@ const Navbar = ({ location }: NavbarProps) => {
               <SearchBox
                 value={city}
                 onSubmit={handleSubmitSearch}
-                onChange={e => handleInputChange(e.target.value)}
+                onChange={handleSearchChange}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    handleSubmitSearch(e);
+                  }
+                }}
+                aria-label='Search for a city'
               />
               <SuggetionBox
                 {...{
                   showSuggestions,
                   suggestions,
                   handleSuggestionClick,
-                  error,
+                  submitError,
                 }}
               />
             </div>

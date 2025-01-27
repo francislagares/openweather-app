@@ -9,6 +9,7 @@ type SearchBoxProps = {
   value: string;
   onChange: React.ChangeEventHandler<HTMLInputElement> | undefined;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  onKeyDown?: React.KeyboardEventHandler<HTMLFormElement> | undefined;
 };
 
 const SearchBox = memo((props: SearchBoxProps) => {

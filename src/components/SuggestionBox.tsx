@@ -5,12 +5,12 @@ const SuggestionBox = memo(
     showSuggestions,
     suggestions,
     handleSuggestionClick,
-    error,
+    submitError,
   }: {
     showSuggestions: boolean;
     suggestions: string[];
     handleSuggestionClick: (item: string) => void;
-    error: string;
+    submitError: string;
   }) => {
     const memoizedSuggestions = useMemo(
       () =>
@@ -26,14 +26,14 @@ const SuggestionBox = memo(
       [suggestions, handleSuggestionClick],
     );
 
-    if (!((showSuggestions && suggestions.length > 1) || error)) {
+    if (!((showSuggestions && suggestions.length > 1) || submitError)) {
       return null;
     }
 
     return (
       <ul className='absolute top-[44px] left-0 mb-4 flex min-w-[200px] flex-col gap-1 rounded-md border border-gray-300 bg-white px-2 py-2'>
-        {error && suggestions.length < 1 && (
-          <li className='p-1 text-red-500'>{error}</li>
+        {submitError && suggestions.length < 1 && (
+          <li className='p-1 text-red-500'>{submitError}</li>
         )}
         {memoizedSuggestions}
       </ul>
