@@ -37,6 +37,7 @@ describe('Navbar Component', () => {
     render(<Navbar />);
 
     const searchInput = screen.getByPlaceholderText(/Search location../i);
+
     expect(searchInput).toBeInTheDocument();
 
     fireEvent.change(searchInput, { target: { value: 'London' } });

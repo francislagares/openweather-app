@@ -24,8 +24,6 @@ export default function ForecastWeatherDetail(
     day = 'Tuesday',
     temp,
     feels_like,
-    temp_min,
-    temp_max,
     description,
   } = props;
 
